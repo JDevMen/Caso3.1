@@ -112,10 +112,10 @@ public class DSinSeguridad implements Runnable {
 				ac.println(OK);
 			}
 			ac.println("Enviando archivo");
+			
 			File file = new File(".\\data\\esteessech.mp4");
-			file.createNewFile();
-	        // Get the size of the file
-	        long length = file.length();
+			
+			
 	        byte[] bytes = new byte[16 * 1024];
 	        InputStream in = new FileInputStream(file);
 	        OutputStream out = sc.getOutputStream();
@@ -125,6 +125,8 @@ public class DSinSeguridad implements Runnable {
 	            out.write(bytes, 0, count);
 	        }
 			
+	        in.close();
+	        out.close();
 			lineaCoca = dc.readLine();
 			if(!lineaCoca.equals("RECIBIDO"))
 			{

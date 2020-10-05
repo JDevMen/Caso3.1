@@ -16,11 +16,7 @@ public class Servidor {
 		
 		ServerSocket ss = new ServerSocket(80);
 		Socket sr = ss.accept();
-		
-
-        
         File file = new File(".\\data\\esteessech.mp4");
-		file.createNewFile();
         // Get the size of the file
         long length = file.length();
         byte[] bytes = new byte[16 * 1024];

@@ -1,6 +1,7 @@
 package cliente;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,19 +34,23 @@ public class ClienteProtocolo {
 		//Confirmación de conexión
 		if((fromServer = nuevo.readLine()).equals("Enviando archivo")){
 			OutputStream out = null;
-			InputStream in2 = pIn;
+			
 			try {
-				out = new FileOutputStream("./data/prueba.mp4");
+				File file = new File("./data/prueba.mp4");
+				file.createNewFile();
+				out = new FileOutputStream(file);
+				
 			} catch (FileNotFoundException ex) {
 				System.out.println("File not found. ");
 			}
 			byte[] bytes = new byte[16*1024];
 			int count;
-			while ((count = in2.read(bytes)) > 0) {
+			while ((count = pIn.read(bytes)) > 0) {
 				System.out.println("" + count);
+				out.write(bytes, 0, bytes.length);
 			}			
 			System.out.println("Hola");
-			in2.close();
+			pIn.close();
 			out.close();
 			pOut.println("RECIBIDO");
 
