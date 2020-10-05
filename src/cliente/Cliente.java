@@ -2,6 +2,7 @@ package cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -14,13 +15,13 @@ public class Cliente extends Thread {
 	public void run (){
 		Socket socket = null;
 		PrintWriter escritor = null;
-		BufferedReader lector = null;
+		InputStream lector = null;
 		
 		System.out.println("Cliente...");
 		try{
 			socket = new Socket(SERVIDOR, PUERTO);
 			escritor = new PrintWriter(socket.getOutputStream(), true);
-			lector = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			lector = socket.getInputStream();
 		}
 		catch (IOException e){
 			e.printStackTrace();

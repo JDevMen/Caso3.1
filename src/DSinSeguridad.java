@@ -1,8 +1,11 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -108,6 +111,29 @@ public class DSinSeguridad implements Runnable {
 			} else {
 				ac.println(OK);
 			}
+			ac.println("Enviando archivo");
+			File file = new File(".\\data\\esteessech.mp4");
+			file.createNewFile();
+	        // Get the size of the file
+	        long length = file.length();
+	        byte[] bytes = new byte[16 * 1024];
+	        InputStream in = new FileInputStream(file);
+	        OutputStream out = sc.getOutputStream();
+
+	        int count;
+	        while ((count = in.read(bytes)) > 0) {
+	            out.write(bytes, 0, count);
+	        }
+			
+			lineaCoca = dc.readLine();
+			if(!lineaCoca.equals("RECIBIDO"))
+			{
+				System.out.println("Problema, no fue recibido el mensaje");
+			}
+			else {
+				System.out.println("llegó bien panita");
+			}
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
