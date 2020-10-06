@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.security.MessageDigest;
 
 
 /*
@@ -89,6 +90,39 @@ public class DSinSeguridad implements Runnable {
 	}
 	
 	
+	private static String getFileChecksum(MessageDigest digest, File file) throws IOException
+	{
+	    //Get file input stream for reading the file content
+	    FileInputStream fis = new FileInputStream(file);
+	     
+	    //Create byte array to read data in chunks
+	    byte[] byteArray = new byte[1024];
+	    int bytesCount = 0; 
+	      
+	    //Read file data and update in message digest
+	    while ((bytesCount = fis.read(byteArray)) != -1) {
+	        digest.update(byteArray, 0, bytesCount);
+	    };
+	     
+	    //close the stream; We don't need it now.
+	    fis.close();
+	     
+	    //Get the hash's bytes
+	    byte[] bytes = digest.digest();
+	     
+	    //This bytes[] has bytes in decimal format;
+	    //Convert it to hexadecimal format
+	    StringBuilder sb = new StringBuilder();
+	    for(int i=0; i< bytes.length ;i++)
+	    {
+	        sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+	    }
+	     
+	    //return complete hash
+	   return sb.toString();
+	}
+	
+	
 	//Método para enviar el archivo que sea y la reputa madre que te repario
 	public void sendFile(File file, DataOutputStream dos) throws IOException {
 	    if(dos!=null&&file.exists()&&file.isFile())
@@ -100,10 +134,13 @@ public class DSinSeguridad implements Runnable {
 	        int read = 0;
 	        System.out.println("Tamaño archivo "+file.length());
 	        
+	        //To do: timestamp para medir tiempo de transferencia
+	        
+	        
+	        //Ciclo para enviar el archivo
 	        while ((read = input.read(bytes)) != -1)
 	        {
 	            dos.write(bytes, 0, read);
-//	            System.out.println(""+read);
 	        }
 	        dos.flush();
 	        input.close();
@@ -134,34 +171,45 @@ public class DSinSeguridad implements Runnable {
 			} else {
 				ac.println(OK);
 			}
+			//Enviar la confirmación de empezar a enviar el archivo
 			ac.println("Enviando archivo");
 			
+			//Archivo a enviar
 			File file = new File(".\\data\\esteessech.mp4");
+			
+			//Enviando nombre archivo xdddddd
+			ac.println("esteessech.mp4");
+			
+			//Enviar el archivo al cliente
 			DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
 			sendFile(file, dos);
-//			long tamArchivo = file.length();
-//			
-//			System.out.println("tamaño archivo: "+tamArchivo);
-//			
-//			ac.println(tamArchivo);
-//			
-//	        byte[] bytes = new byte[16*1024];
-//	        InputStream in = new FileInputStream(file);
-//	        OutputStream out = sc.getOutputStream();
-//	        long contador=0;
-//	        int count;
-//	        while ((count = in.read(bytes)) > 0) {
-//	        	System.out.println("" + count);
-//	            out.write(bytes, 0, count);
-//	            contador+= count;
-//	        }
-//			System.out.println("Contador "+contador);
+	        System.out.println("Termina de enviar");
 	        
+	        //Recibir FINALIZADO
+	        lineaCoca = dc.readLine();
+	        System.out.println(lineaCoca);
+	        
+	        
+	      //To do: Time stamp para saber cuando terminó la transferencia
+	        
+	        
+	      //Enviar código hash del archivo
+	        
+	      //Use SHA-1 algorithm
+	        MessageDigest shaDigest = MessageDigest.getInstance("MD5");
+	         
+	        //SHA-1 checksum 
+	        String shaChecksum = getFileChecksum(shaDigest, file);
+	        
+	      //see checksum
+	        System.out.println("hash nuevo "+shaChecksum);
+	        
+			int hashArchivo = file.hashCode();
 			
-//	        System.out.println("Mando el video");
-////	        ac.println();
-	        System.out.println("Mando FINALIZADO");
+			ac.println(hashArchivo);
+			System.out.println("codigo hash "+hashArchivo);
 	        
+	        //Recibiendo mensaje de recibido 
 			lineaCoca = dc.readLine();
 			if(!lineaCoca.equals("RECIBIDO"))
 			{
@@ -171,8 +219,6 @@ public class DSinSeguridad implements Runnable {
 				System.out.println("llegó bien panita");
 			}
 			
-//			in.close();
-//	        out.close();
 			
 			dos.close();
 		} catch (Exception e) {
