@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +87,29 @@ public class DSinSeguridad implements Runnable {
 		}
 
 	}
-
+	
+	
+	//Método para enviar el archivo que sea y la reputa madre que te repario
+	public void sendFile(File file, DataOutputStream dos) throws IOException {
+	    if(dos!=null&&file.exists()&&file.isFile())
+	    {
+	    	byte[] bytes = new byte[16*1024];
+	        FileInputStream input = new FileInputStream(file);
+	        dos.writeLong(file.length());
+	        System.out.println(file.getAbsolutePath());
+	        int read = 0;
+	        System.out.println("Tamaño archivo "+file.length());
+	        
+	        while ((read = input.read(bytes)) != -1)
+	        {
+	            dos.write(bytes, 0, read);
+//	            System.out.println(""+read);
+	        }
+	        dos.flush();
+	        input.close();
+	        System.out.println("File successfully sent!");
+	    }
+	}
 
 	/*
 	 * Método run, tu deberías acordarte pero sino lo que tiene es el hilo de 
@@ -98,7 +122,6 @@ public class DSinSeguridad implements Runnable {
 		System.out.println(dlg + "Empezando atención.");
 
 		String lineaCoca;
-
 		try {
 			PrintWriter ac = new PrintWriter(sc.getOutputStream() , true);
 			BufferedReader dc = new BufferedReader(new InputStreamReader(sc.getInputStream()));
@@ -114,19 +137,31 @@ public class DSinSeguridad implements Runnable {
 			ac.println("Enviando archivo");
 			
 			File file = new File(".\\data\\esteessech.mp4");
+			DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
+			sendFile(file, dos);
+//			long tamArchivo = file.length();
+//			
+//			System.out.println("tamaño archivo: "+tamArchivo);
+//			
+//			ac.println(tamArchivo);
+//			
+//	        byte[] bytes = new byte[16*1024];
+//	        InputStream in = new FileInputStream(file);
+//	        OutputStream out = sc.getOutputStream();
+//	        long contador=0;
+//	        int count;
+//	        while ((count = in.read(bytes)) > 0) {
+//	        	System.out.println("" + count);
+//	            out.write(bytes, 0, count);
+//	            contador+= count;
+//	        }
+//			System.out.println("Contador "+contador);
+	        
 			
-			
-	        byte[] bytes = new byte[16 * 1024];
-	        InputStream in = new FileInputStream(file);
-	        OutputStream out = sc.getOutputStream();
-
-	        int count;
-	        while ((count = in.read(bytes)) > 0) {
-	            out.write(bytes, 0, count);
-	        }
-			
-	        in.close();
-	        out.close();
+//	        System.out.println("Mando el video");
+////	        ac.println();
+	        System.out.println("Mando FINALIZADO");
+	        
 			lineaCoca = dc.readLine();
 			if(!lineaCoca.equals("RECIBIDO"))
 			{
@@ -136,11 +171,14 @@ public class DSinSeguridad implements Runnable {
 				System.out.println("llegó bien panita");
 			}
 			
+//			in.close();
+//	        out.close();
+			
+			dos.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 
 		System.out.println(dlg + "Terminando atención.");
 

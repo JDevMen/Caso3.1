@@ -1,6 +1,8 @@
 package cliente;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,7 +36,7 @@ public class ClienteProtocolo {
 		//Confirmación de conexión
 		if((fromServer = nuevo.readLine()).equals("Enviando archivo")){
 			OutputStream out = null;
-			
+			System.out.println("Entro a enviando archivo");
 			try {
 				File file = new File("./data/prueba.mp4");
 				file.createNewFile();
@@ -43,15 +45,49 @@ public class ClienteProtocolo {
 			} catch (FileNotFoundException ex) {
 				System.out.println("File not found. ");
 			}
+			
+			DataInputStream dis = new DataInputStream(pIn);
+			long len = dis.readLong();
+			System.out.println("Tamaño archivo "+len);
+			int read = 0;
 			byte[] bytes = new byte[16*1024];
-			int count;
-			while ((count = pIn.read(bytes)) > 0) {
-				System.out.println("" + count);
-				out.write(bytes, 0, bytes.length);
-			}			
+			long contador = 0;
+			System.out.println("entro a leer");
+			while (len>0)
+			{	
+				read = dis.read(bytes);
+				out.write(bytes);
+//				contador+=bytes.length;
+				len-=read;
+			}
+			System.out.println("Salió de leer");
+//			long tamArchivo = Long.parseLong(nuevo.readLine());
+//			
+//			System.out.println("tamArchivo "+tamArchivo );
+//			
+//			byte[] bytes = new byte[16*1024];
+//			long contador =0;
+//			int count;
+//			while ((count = pIn.read(bytes)) > 0) {
+//				System.out.println("" + count);
+//				out.write(bytes, 0, bytes.length);
+//				contador+= count;
+//				System.out.println("contador "+contador);
+//				if (contador >= tamArchivo ) {
+//					break;
+//				}
+//			}
+			
+//			while (contador< tamArchivo) {
+//				count = pIn.read(bytes); 
+//				System.out.println("count " + count);
+//				out.write(bytes, 0, count);
+//				contador+= count;
+//			}	
+			
 			System.out.println("Hola");
-			pIn.close();
-			out.close();
+//			pIn.close();
+//			out.close();
 			pOut.println("RECIBIDO");
 
 		}

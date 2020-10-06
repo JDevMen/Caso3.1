@@ -26,6 +26,7 @@ public class Servidor {
         int count;
         while ((count = in.read(bytes)) > 0) {
             out.write(bytes, 0, count);
+            System.out.println("count "+count);
         }
 
         out.close();

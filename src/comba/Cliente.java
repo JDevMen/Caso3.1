@@ -35,6 +35,7 @@ public class Cliente {
         int count;
         while ((count = in.read(bytes)) > 0) {
             out.write(bytes, 0, bytes.length);
+            System.out.println("count "+count);
         }
 		
 
