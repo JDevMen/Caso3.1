@@ -6,11 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Cliente extends Thread {
 	
 	public static final int PUERTO = 147;
 	public static final String SERVIDOR = "localhost";
+	private ArrayList<Socket> lista = new ArrayList<Socket>();
 	
 	public void run (){
 		Socket socket = null;
@@ -20,6 +22,7 @@ public class Cliente extends Thread {
 		System.out.println("Cliente...");
 		try{
 			socket = new Socket(SERVIDOR, PUERTO);
+			lista.add(socket);
 			escritor = new PrintWriter(socket.getOutputStream(), true);
 			lector = socket.getInputStream();
 		}

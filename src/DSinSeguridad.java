@@ -41,7 +41,6 @@ public class DSinSeguridad implements Runnable {
 	private int cuantosConectados = 0;
 	private static int cantUsCon = 0;
 	private String cualVideo = "";
-	private Object semaforo;
 
 	//Cambiar socket del servidor delegado
 	public void cambiarSocket(Socket pSc)
@@ -60,9 +59,9 @@ public class DSinSeguridad implements Runnable {
 	 * se va a comunidar y un id que lo identifique (asignado por el servidor)
 	 * Abrá que hacer ajustes para que el log quede por bloques de cada delegado
 	 */
-	public DSinSeguridad (Socket csP, int idP, BufferedReader pConsola, int pCuantos, String pCual, Object pSem) {
+	public DSinSeguridad (Socket csP, int idP, BufferedReader pConsola, int pCuantos, String pCual) {
 		System.out.println("Entró al constructor");
-		
+
 		sc = csP;
 		System.out.println("LLEGUE UNA VEZ " + idP);
 		this.id = idP;
@@ -70,7 +69,6 @@ public class DSinSeguridad implements Runnable {
 		consola = pConsola;
 		cuantosConectados= pCuantos;
 		cualVideo=pCual;
-		semaforo = pSem;
 		System.out.println("Salió del contructor");
 	}
 
@@ -100,63 +98,63 @@ public class DSinSeguridad implements Runnable {
 		}
 
 	}
-	
-	
+
+
 	private static String getFileChecksum(MessageDigest digest, File file) throws IOException
 	{
-	    //Get file input stream for reading the file content
-	    FileInputStream fis = new FileInputStream(file);
-	     
-	    //Create byte array to read data in chunks
-	    byte[] byteArray = new byte[16*1024];
-	    int bytesCount = 0; 
-	      
-	    //Read file data and update in message digest
-	    while ((bytesCount = fis.read(byteArray)) != -1) {
-	        digest.update(byteArray, 0, bytesCount);
-	    };
-	     
-	    //close the stream; We don't need it now.
-	    fis.close();
-	     
-	    //Get the hash's bytes
-	    byte[] bytes = digest.digest();
-	     
-	    //This bytes[] has bytes in decimal format;
-	    //Convert it to hexadecimal format
-	    StringBuilder sb = new StringBuilder();
-	    for(int i=0; i< bytes.length ;i++)
-	    {
-	        sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-	    }
-	     
-	    //return complete hash
-	   return sb.toString();
+		//Get file input stream for reading the file content
+		FileInputStream fis = new FileInputStream(file);
+
+		//Create byte array to read data in chunks
+		byte[] byteArray = new byte[16*1024];
+		int bytesCount = 0; 
+
+		//Read file data and update in message digest
+		while ((bytesCount = fis.read(byteArray)) != -1) {
+			digest.update(byteArray, 0, bytesCount);
+		};
+
+		//close the stream; We don't need it now.
+		fis.close();
+
+		//Get the hash's bytes
+		byte[] bytes = digest.digest();
+
+		//This bytes[] has bytes in decimal format;
+		//Convert it to hexadecimal format
+		StringBuilder sb = new StringBuilder();
+		for(int i=0; i< bytes.length ;i++)
+		{
+			sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+		}
+
+		//return complete hash
+		return sb.toString();
 	}
-	
-	
+
+
 	//Método para enviar el archivo que sea y la reputa madre que te repario
 	public void sendFile(File file, DataOutputStream dos) throws IOException {
-	    if(dos!=null&&file.exists()&&file.isFile())
-	    {
-	    	byte[] bytes = new byte[16*1024];
-	        FileInputStream input = new FileInputStream(file);
-	        dos.writeLong(file.length());
-	        int read = 0;
-	        System.out.println("Tamaño archivo "+file.length());
-	        
-	        //To do: timestamp para medir tiempo de transferencia
-	        
-	        
-	        //Ciclo para enviar el archivo
-	        while ((read = input.read(bytes)) != -1)
-	        {
-	            dos.write(bytes, 0, read);
-	        }
-	        dos.flush();
-	        input.close();
-	        System.out.println("File successfully sent!");
-	    }
+		if(dos!=null&&file.exists()&&file.isFile())
+		{
+			byte[] bytes = new byte[16*1024];
+			FileInputStream input = new FileInputStream(file);
+			dos.writeLong(file.length());
+			int read = 0;
+			System.out.println("Tamaño archivo "+file.length());
+
+			//To do: timestamp para medir tiempo de transferencia
+
+
+			//Ciclo para enviar el archivo
+			while ((read = input.read(bytes)) != -1)
+			{
+				dos.write(bytes, 0, read);
+			}
+			dos.flush();
+			input.close();
+			System.out.println("File successfully sent!");
+		}
 	}
 
 	/*
@@ -173,7 +171,7 @@ public class DSinSeguridad implements Runnable {
 		try {
 			PrintWriter ac = new PrintWriter(sc.getOutputStream() , true);
 			BufferedReader dc = new BufferedReader(new InputStreamReader(sc.getInputStream()));
-		
+
 			lineaCoca = dc.readLine();
 			if (!lineaCoca.equals(HOLA)) {
 				ac.println(ERROR);
@@ -181,32 +179,11 @@ public class DSinSeguridad implements Runnable {
 				throw new Exception(dlg + ERROR + REC + lineaCoca +"-terminando.");
 			} else {
 				ac.println(OK);
-				aumentarCantidadClientes();
 			}
-			
-			//Aquí se deben dormir los thread en caso de esperar
-			if(cuantosConectados!=1)
-			{
-				if(darCantidadConectados()<cuantosConectados)
-				{
-					synchronized (semaforo)
-					{
-						System.out.println("Thread "+this.id+ " esperando");
-						semaforo.wait();
-					}
-				}else
-				{
-					disminuirCantidadClientes(cuantosConectados);
-					semaforo.notifyAll();
-					
-				}
-			}
-			
-			//
 			String resultadoConsola = cualVideo;
-			
+
 			String archivoElegido = "";
-			
+
 			if(resultadoConsola.equals("1"))
 			{
 				archivoElegido ="./data/esteessech.mp4";
@@ -216,55 +193,55 @@ public class DSinSeguridad implements Runnable {
 				archivoElegido = "./data/actualidad.mp4";
 			}
 			//Revisa si quiere el video de Sech o el de Drake y Josh
-				//Enviar la confirmación de empezar a enviar el archivo
-				ac.println("Enviando archivo");
-				
-				//Archivo a enviar
-				File file = new File(archivoElegido);
-				
-				//Enviando nombre archivo xdddddd
-				ac.println(archivoElegido.split("/")[2]);
-				
-				//Enviar el archivo al cliente
-				DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
-				sendFile(file, dos);
-		        System.out.println("Termina de enviar");
-		        
-		      //Recibir FINALIZADO
-		        lineaCoca = dc.readLine();
-		        System.out.println(lineaCoca);
-		        
-		        
-		      //To do: Time stamp para saber cuando terminó la transferencia
-		        
-		        
-		      //Enviar código hash del archivo
-		        
-		      //Use SHA-1 algorithm
-		        MessageDigest shaDigest = MessageDigest.getInstance("MD5");
-		         
-		        //SHA-1 checksum 
-		        String shaChecksum = getFileChecksum(shaDigest, file);
-		        
-		      //see checksum
-		        System.out.println("hash nuevo "+shaChecksum);
-		        
-		        ac.println(shaChecksum);
-		        
-		        //Recibiendo mensaje de recibido 
-				lineaCoca = dc.readLine();
-				if(!lineaCoca.equals("RECIBIDO"))
-				{
-					System.out.println("Problema, no fue recibido el mensaje");
-				}
-				else {
-					System.out.println("llegó bien panita");
-				}
-				
-				
-				dos.close();
-		        
-	        
+			//Enviar la confirmación de empezar a enviar el archivo
+			ac.println("Enviando archivo");
+
+			//Archivo a enviar
+			File file = new File(archivoElegido);
+
+			//Enviando nombre archivo xdddddd
+			ac.println(archivoElegido.split("/")[2]);
+
+			//Enviar el archivo al cliente
+			DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
+			sendFile(file, dos);
+			System.out.println("Termina de enviar");
+
+			//Recibir FINALIZADO
+			lineaCoca = dc.readLine();
+			System.out.println(lineaCoca);
+
+
+			//To do: Time stamp para saber cuando terminó la transferencia
+
+
+			//Enviar código hash del archivo
+
+			//Use SHA-1 algorithm
+			MessageDigest shaDigest = MessageDigest.getInstance("MD5");
+
+			//SHA-1 checksum 
+			String shaChecksum = getFileChecksum(shaDigest, file);
+
+			//see checksum
+			System.out.println("hash nuevo "+shaChecksum);
+
+			ac.println(shaChecksum);
+
+			//Recibiendo mensaje de recibido 
+			lineaCoca = dc.readLine();
+			if(!lineaCoca.equals("RECIBIDO"))
+			{
+				System.out.println("Problema, no fue recibido el mensaje");
+			}
+			else {
+				System.out.println("llegó bien panita");
+			}
+
+
+			dos.close();
+
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -273,16 +250,6 @@ public class DSinSeguridad implements Runnable {
 		System.out.println(dlg + "Terminando atención.");
 
 	}
+
 	
-	public synchronized void aumentarCantidadClientes()
-	{
-		cantUsCon ++;
-	}
-	public synchronized void disminuirCantidadClientes(int pCantidad)
-	{
-		cantUsCon -= pCantidad;
-	}
-	public synchronized int darCantidadConectados() {
-		return cantUsCon;
-	}
 }
