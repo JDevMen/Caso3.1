@@ -65,7 +65,7 @@ public class ClienteProtocolo {
 			while (len>0)
 			{	
 				read = dis.read(bytes);
-				out.write(bytes);
+				out.write(bytes,0,read);
 				len-=read;
 			}
 			System.out.println("Salió de leer");
