@@ -37,6 +37,7 @@ public class DSinSeguridad implements Runnable {
 	private static File file;
 	public static final int numCadenas = 13;
 	private long id = 0;
+	private BufferedReader consola;
 
 	//Cambiar socket del servidor delegado
 	public void cambiarSocket(Socket pSc)
@@ -55,11 +56,12 @@ public class DSinSeguridad implements Runnable {
 	 * se va a comunidar y un id que lo identifique (asignado por el servidor)
 	 * Abrá que hacer ajustes para que el log quede por bloques de cada delegado
 	 */
-	public DSinSeguridad (Socket csP, int idP) {
+	public DSinSeguridad (Socket csP, int idP, BufferedReader pConsola) {
 		sc = csP;
 		System.out.println("LLEGUE UNA VEZ " + idP);
 		this.id = idP;
 		dlg = new String("delegado " + idP + ": ");
+		consola = pConsola;
 	}
 
 	public long getId() {
@@ -130,7 +132,6 @@ public class DSinSeguridad implements Runnable {
 	    	byte[] bytes = new byte[16*1024];
 	        FileInputStream input = new FileInputStream(file);
 	        dos.writeLong(file.length());
-	        System.out.println(file.getAbsolutePath());
 	        int read = 0;
 	        System.out.println("Tamaño archivo "+file.length());
 	        
@@ -171,56 +172,123 @@ public class DSinSeguridad implements Runnable {
 			} else {
 				ac.println(OK);
 			}
-			//Enviar la confirmación de empezar a enviar el archivo
-			ac.println("Enviando archivo");
+			System.out.println("Diga cuál de los siguientes archivos quiere ver:");
+			System.out.println("Presione la tecla 1 para ver al Sech");
+			System.out.println("Presione la tecla 2 para ver la actualidad de la virtualidad");
 			
-			//Archivo a enviar
-			File file = new File(".\\data\\esteessech.mp4");
-			
-			//Enviando nombre archivo xdddddd
-			ac.println("esteessech.mp4");
-			
-			//Enviar el archivo al cliente
-			DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
-			sendFile(file, dos);
-	        System.out.println("Termina de enviar");
-	        
-	        //Recibir FINALIZADO
-	        lineaCoca = dc.readLine();
-	        System.out.println(lineaCoca);
-	        
-	        
-	      //To do: Time stamp para saber cuando terminó la transferencia
-	        
-	        
-	      //Enviar código hash del archivo
-	        
-	      //Use SHA-1 algorithm
-	        MessageDigest shaDigest = MessageDigest.getInstance("MD5");
-	         
-	        //SHA-1 checksum 
-	        String shaChecksum = getFileChecksum(shaDigest, file);
-	        
-	      //see checksum
-	        System.out.println("hash nuevo "+shaChecksum);
-	        
-			int hashArchivo = file.hashCode();
-			
-			ac.println(hashArchivo);
-			System.out.println("codigo hash "+hashArchivo);
-	        
-	        //Recibiendo mensaje de recibido 
-			lineaCoca = dc.readLine();
-			if(!lineaCoca.equals("RECIBIDO"))
+			String resultadoConsola = consola.readLine();
+			System.out.println("Mensaje ingresado por consola "+resultadoConsola);
+			//Revisa si quiere el video de Sech o el de Drake y Josh
+			if(resultadoConsola.equals("1"))
 			{
-				System.out.println("Problema, no fue recibido el mensaje");
+				//Enviar la confirmación de empezar a enviar el archivo
+				ac.println("Enviando archivo");
+				
+				//Archivo a enviar
+				File file = new File(".\\data\\esteessech.mp4");
+				
+				//Enviando nombre archivo xdddddd
+				ac.println("esteessech.mp4");
+				
+				//Enviar el archivo al cliente
+				DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
+				sendFile(file, dos);
+		        System.out.println("Termina de enviar");
+		        
+		      //Recibir FINALIZADO
+		        lineaCoca = dc.readLine();
+		        System.out.println(lineaCoca);
+		        
+		        
+		      //To do: Time stamp para saber cuando terminó la transferencia
+		        
+		        
+		      //Enviar código hash del archivo
+		        
+		      //Use SHA-1 algorithm
+		        MessageDigest shaDigest = MessageDigest.getInstance("MD5");
+		         
+		        //SHA-1 checksum 
+		        String shaChecksum = getFileChecksum(shaDigest, file);
+		        
+		      //see checksum
+		        System.out.println("hash nuevo "+shaChecksum);
+		        
+				int hashArchivo = file.hashCode();
+				
+				ac.println(hashArchivo);
+				System.out.println("codigo hash "+hashArchivo);
+		        
+		        //Recibiendo mensaje de recibido 
+				lineaCoca = dc.readLine();
+				if(!lineaCoca.equals("RECIBIDO"))
+				{
+					System.out.println("Problema, no fue recibido el mensaje");
+				}
+				else {
+					System.out.println("llegó bien panita");
+				}
+				
+				
+				dos.close();
+		        
 			}
+			//Aquí se manda el video de Drake y Josh y no el del Sech
 			else {
-				System.out.println("llegó bien panita");
+				//Enviar la confirmación de empezar a enviar el archivo
+				ac.println("Enviando archivo");
+				
+				//Archivo a enviar
+				File file = new File(".\\data\\actualidad.mp4");
+				
+				//Enviando nombre archivo xdddddd
+				ac.println("actualidad.mp4");
+				
+				//Enviar el archivo al cliente
+				DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
+				sendFile(file, dos);
+		        System.out.println("Termina de enviar");
+		        
+		      //Recibir FINALIZADO
+		        lineaCoca = dc.readLine();
+		        System.out.println(lineaCoca);
+		        
+		        
+		      //To do: Time stamp para saber cuando terminó la transferencia
+		        
+		        
+		      //Enviar código hash del archivo
+		        
+		      //Use SHA-1 algorithm
+		        MessageDigest shaDigest = MessageDigest.getInstance("MD5");
+		         
+		        //SHA-1 checksum 
+		        String shaChecksum = getFileChecksum(shaDigest, file);
+		        
+		      //see checksum
+		        System.out.println("hash nuevo "+shaChecksum);
+		        
+				int hashArchivo = file.hashCode();
+				
+				ac.println(hashArchivo);
+				System.out.println("codigo hash "+hashArchivo);
+		        
+		        //Recibiendo mensaje de recibido 
+				lineaCoca = dc.readLine();
+				if(!lineaCoca.equals("RECIBIDO"))
+				{
+					System.out.println("Problema, no fue recibido el mensaje");
+				}
+				else {
+					System.out.println("llegó bien panita");
+				}
+				
+				
+				dos.close();
+		        
 			}
 			
-			
-			dos.close();
+	        
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

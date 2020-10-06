@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executors;
@@ -27,7 +29,7 @@ public class Servidor {
 		System.out.println("Iniciado el servidor en el puerto: "+puerto);
 		
 		ThreadPoolExecutor deadpools = (ThreadPoolExecutor) Executors.newFixedThreadPool(cantServidores);
-		
+		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 		/*
 		 * Aquí estoy poniendo el ciclo para aceptar conexiones a los servidores delegados
 		 */
@@ -35,7 +37,7 @@ public class Servidor {
 		{
 			try { 
 				Socket sc = ss.accept();
-				DSinSeguridad dingo = new DSinSeguridad(sc,i);
+				DSinSeguridad dingo = new DSinSeguridad(sc,i,stdIn);
 				deadpools.execute(dingo);
 				System.out.println("Cliente aceptado.");
 
