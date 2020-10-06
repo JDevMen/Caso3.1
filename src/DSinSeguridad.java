@@ -61,6 +61,8 @@ public class DSinSeguridad implements Runnable {
 	 * Abrá que hacer ajustes para que el log quede por bloques de cada delegado
 	 */
 	public DSinSeguridad (Socket csP, int idP, BufferedReader pConsola, int pCuantos, String pCual, Object pSem) {
+		System.out.println("Entró al constructor");
+		
 		sc = csP;
 		System.out.println("LLEGUE UNA VEZ " + idP);
 		this.id = idP;
@@ -69,7 +71,7 @@ public class DSinSeguridad implements Runnable {
 		cuantosConectados= pCuantos;
 		cualVideo=pCual;
 		semaforo = pSem;
-		
+		System.out.println("Salió del contructor");
 	}
 
 	public long getId() {
@@ -181,19 +183,47 @@ public class DSinSeguridad implements Runnable {
 				ac.println(OK);
 				aumentarCantidadClientes();
 			}
+			
+			//Aquí se deben dormir los thread en caso de esperar
+			if(cuantosConectados!=1)
+			{
+				if(darCantidadConectados()<cuantosConectados)
+				{
+					synchronized (semaforo)
+					{
+						System.out.println("Thread "+this.id+ " esperando");
+						semaforo.wait();
+					}
+				}else
+				{
+					disminuirCantidadClientes(cuantosConectados);
+					semaforo.notifyAll();
+					
+				}
+			}
+			
+			//
 			String resultadoConsola = cualVideo;
 			
-			//Revisa si quiere el video de Sech o el de Drake y Josh
+			String archivoElegido = "";
+			
 			if(resultadoConsola.equals("1"))
 			{
+				archivoElegido ="./data/esteessech.mp4";
+			}
+			else
+			{
+				archivoElegido = "./data/actualidad.mp4";
+			}
+			//Revisa si quiere el video de Sech o el de Drake y Josh
 				//Enviar la confirmación de empezar a enviar el archivo
 				ac.println("Enviando archivo");
 				
 				//Archivo a enviar
-				File file = new File(".\\data\\esteessech.mp4");
+				File file = new File(archivoElegido);
 				
 				//Enviando nombre archivo xdddddd
-				ac.println("esteessech.mp4");
+				ac.println(archivoElegido.split("/")[2]);
 				
 				//Enviar el archivo al cliente
 				DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
@@ -234,58 +264,6 @@ public class DSinSeguridad implements Runnable {
 				
 				dos.close();
 		        
-			}
-			//Aquí se manda el video de Drake y Josh y no el del Sech
-			else {
-				//Enviar la confirmación de empezar a enviar el archivo
-				ac.println("Enviando archivo");
-				
-				//Archivo a enviar
-				File file = new File(".\\data\\actualidad.mp4");
-				
-				//Enviando nombre archivo xdddddd
-				ac.println("actualidad.mp4");
-				
-				//Enviar el archivo al cliente
-				DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
-				sendFile(file, dos);
-		        System.out.println("Termina de enviar");
-		        
-		      //Recibir FINALIZADO
-		        lineaCoca = dc.readLine();
-		        System.out.println(lineaCoca);
-		        
-		        
-		      //To do: Time stamp para saber cuando terminó la transferencia
-		        
-		        
-		      //Enviar código hash del archivo
-		        
-		      //Use SHA-1 algorithm
-		        MessageDigest shaDigest = MessageDigest.getInstance("MD5");
-		         
-		        //SHA-1 checksum 
-		        String shaChecksum = getFileChecksum(shaDigest, file);
-		        
-		      //see checksum
-		        System.out.println("hash nuevo "+shaChecksum);
-		        ac.println(shaChecksum);
-		        
-		        //Recibiendo mensaje de recibido 
-				lineaCoca = dc.readLine();
-				if(!lineaCoca.equals("RECIBIDO"))
-				{
-					System.out.println("Problema, no fue recibido el mensaje");
-				}
-				else {
-					System.out.println("llegó bien panita");
-				}
-				
-				
-				dos.close();
-		        
-			}
-			
 	        
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -300,9 +278,9 @@ public class DSinSeguridad implements Runnable {
 	{
 		cantUsCon ++;
 	}
-	public synchronized void disminuirCantidadClientes()
+	public synchronized void disminuirCantidadClientes(int pCantidad)
 	{
-		cantUsCon --;
+		cantUsCon -= pCantidad;
 	}
 	public synchronized int darCantidadConectados() {
 		return cantUsCon;
