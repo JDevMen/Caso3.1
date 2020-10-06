@@ -38,6 +38,10 @@ public class DSinSeguridad implements Runnable {
 	public static final int numCadenas = 13;
 	private long id = 0;
 	private BufferedReader consola;
+	private int cuantosConectados = 0;
+	private static int cantUsCon = 0;
+	private String cualVideo = "";
+	private Object semaforo;
 
 	//Cambiar socket del servidor delegado
 	public void cambiarSocket(Socket pSc)
@@ -56,12 +60,16 @@ public class DSinSeguridad implements Runnable {
 	 * se va a comunidar y un id que lo identifique (asignado por el servidor)
 	 * Abrá que hacer ajustes para que el log quede por bloques de cada delegado
 	 */
-	public DSinSeguridad (Socket csP, int idP, BufferedReader pConsola) {
+	public DSinSeguridad (Socket csP, int idP, BufferedReader pConsola, int pCuantos, String pCual, Object pSem) {
 		sc = csP;
 		System.out.println("LLEGUE UNA VEZ " + idP);
 		this.id = idP;
 		dlg = new String("delegado " + idP + ": ");
 		consola = pConsola;
+		cuantosConectados= pCuantos;
+		cualVideo=pCual;
+		semaforo = pSem;
+		
 	}
 
 	public long getId() {
@@ -98,7 +106,7 @@ public class DSinSeguridad implements Runnable {
 	    FileInputStream fis = new FileInputStream(file);
 	     
 	    //Create byte array to read data in chunks
-	    byte[] byteArray = new byte[1024];
+	    byte[] byteArray = new byte[16*1024];
 	    int bytesCount = 0; 
 	      
 	    //Read file data and update in message digest
@@ -171,13 +179,10 @@ public class DSinSeguridad implements Runnable {
 				throw new Exception(dlg + ERROR + REC + lineaCoca +"-terminando.");
 			} else {
 				ac.println(OK);
+				aumentarCantidadClientes();
 			}
-			System.out.println("Diga cuál de los siguientes archivos quiere ver:");
-			System.out.println("Presione la tecla 1 para ver al Sech");
-			System.out.println("Presione la tecla 2 para ver la actualidad de la virtualidad");
+			String resultadoConsola = cualVideo;
 			
-			String resultadoConsola = consola.readLine();
-			System.out.println("Mensaje ingresado por consola "+resultadoConsola);
 			//Revisa si quiere el video de Sech o el de Drake y Josh
 			if(resultadoConsola.equals("1"))
 			{
@@ -214,10 +219,7 @@ public class DSinSeguridad implements Runnable {
 		      //see checksum
 		        System.out.println("hash nuevo "+shaChecksum);
 		        
-				int hashArchivo = file.hashCode();
-				
-				ac.println(hashArchivo);
-				System.out.println("codigo hash "+hashArchivo);
+		        ac.println(shaChecksum);
 		        
 		        //Recibiendo mensaje de recibido 
 				lineaCoca = dc.readLine();
@@ -267,11 +269,7 @@ public class DSinSeguridad implements Runnable {
 		        
 		      //see checksum
 		        System.out.println("hash nuevo "+shaChecksum);
-		        
-				int hashArchivo = file.hashCode();
-				
-				ac.println(hashArchivo);
-				System.out.println("codigo hash "+hashArchivo);
+		        ac.println(shaChecksum);
 		        
 		        //Recibiendo mensaje de recibido 
 				lineaCoca = dc.readLine();
@@ -296,5 +294,17 @@ public class DSinSeguridad implements Runnable {
 
 		System.out.println(dlg + "Terminando atención.");
 
+	}
+	
+	public synchronized void aumentarCantidadClientes()
+	{
+		cantUsCon ++;
+	}
+	public synchronized void disminuirCantidadClientes()
+	{
+		cantUsCon --;
+	}
+	public synchronized int darCantidadConectados() {
+		return cantUsCon;
 	}
 }

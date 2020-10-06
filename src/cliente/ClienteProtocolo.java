@@ -83,17 +83,17 @@ public class ClienteProtocolo {
 	        String shaChecksum = getFileChecksum(shaDigest, file);
 	        
 	      //see checksum
+	        String hashVideoRecibido = nuevo.readLine();
+	        System.out.println("Hash recibido del video:"+hashVideoRecibido);
 	        System.out.println("hash nuevo "+shaChecksum);
-			
-			hashArchivo = Integer.parseInt(nuevo.readLine());
-			System.out.println("codigo hash "+hashArchivo);
-			
-			int hashCalculado = file.hashCode();
-			
-			System.out.println("Hash calculado"+hashCalculado);
-			
-			System.out.println("Enviando recibido");
-			pOut.println("RECIBIDO");
+			if(hashVideoRecibido.equals(shaChecksum)) {
+				System.out.println("Enviando recibido");
+				pOut.println("RECIBIDO");
+			}
+			else {
+				System.out.println("Enviando no recibido");
+				pOut.println("NO RECIBIDO");
+			}
 			
 			}catch (FileNotFoundException | NoSuchAlgorithmException ex) {
 				System.out.println("File not found. ");
