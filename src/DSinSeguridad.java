@@ -55,12 +55,12 @@ public class DSinSeguridad implements Runnable {
 	}
 
 	/*
-	 * M�todo principal para iniciar el thread, recibe el socket por el cual se va a
-	 * comunidar y un id que lo identifique (asignado por el servidor) Abr� que
+	 * Mitodo principal para iniciar el thread, recibe el socket por el cual se va a
+	 * comunidar y un id que lo identifique (asignado por el servidor) Abri que
 	 * hacer ajustes para que el log quede por bloques de cada delegado
 	 */
 	public DSinSeguridad(Socket csP, int idP, BufferedReader pConsola, int pCuantos, String pCual) {
-		System.out.println("Entr� al constructor");
+		System.out.println("Entri al constructor");
 
 		sc = csP;
 		System.out.println("LLEGUE UNA VEZ " + idP);
@@ -69,7 +69,7 @@ public class DSinSeguridad implements Runnable {
 		consola = pConsola;
 		cuantosConectados = pCuantos;
 		cualVideo = pCual;
-		System.out.println("Sali� del contructor");
+		System.out.println("Salii del contructor");
 	}
 
 	public long getId() {
@@ -81,10 +81,10 @@ public class DSinSeguridad implements Runnable {
 	}
 
 	/*
-	 * Generacion del archivo log. Nota: - Debe conservar el metodo . - Es el Ãºnico
+	 * Generacion del archivo log. Nota: - Debe conservar el metodo . - Es el unico
 	 * metodo permitido para escribir en el log.
 	 */
-	// Tal cual, este m�todo lo �nico que hace es escribir sobre el log.
+	// Tal cual, este mitodo lo inico que hace es escribir sobre el log.
 	private void escribirMensaje(String pCadena) {
 
 		try {
@@ -128,38 +128,40 @@ public class DSinSeguridad implements Runnable {
 		return sb.toString();
 	}
 
-	// M�todo para enviar el archivo que sea y la reputa madre que te repario
-	public void sendFile(File file, DataOutputStream dos) throws IOException {
+	// Mitodo para enviar el archivo que sea y la reputa madre que te repario
+	public int sendFile(File file, DataOutputStream dos) throws IOException {
+		int cuantos =0;
 		if (dos != null && file.exists() && file.isFile()) {
 			byte[] bytes = new byte[16 * 1024];
 			FileInputStream input = new FileInputStream(file);
 			dos.writeLong(file.length());
 			int read = 0;
-			System.out.println("Tama�o archivo " + file.length());
+			System.out.println("Tamaio archivo " + file.length());
 
 			// To do: timestamp para medir tiempo de transferencia
 
 			// Ciclo para enviar el archivo
 			while ((read = input.read(bytes)) != -1) {
 				dos.write(bytes, 0, read);
+				cuantos ++;
 			}
 			dos.flush();
 			input.close();
 			System.out.println("File successfully sent!");
 		}
+		return cuantos;
 	}
 
 	/*
-	 * M�todo run, tu deber�as acordarte pero sino lo que tiene es el hilo de
-	 * ejecuci�n del thread. B�sicamente como va a ejecutar los dem�s m�todos
+	 * Mitodo run, tu deberias acordarte pero sino lo que tiene es el hilo de
+	 * ejecuciin del thread. Bisicamente como va a ejecutar los demis mitodos
 	 * (non-Javadoc)
 	 * 
 	 * @see java.lang.Thread#run()
 	 */
 	public void run() {
 
-		System.out.println(dlg + "Empezando atenci�n.");
-
+		System.out.println(dlg + "Empezando atenciin.");
 		String lineaCoca;
 		try {
 			PrintWriter ac = new PrintWriter(sc.getOutputStream(), true);
@@ -169,17 +171,14 @@ public class DSinSeguridad implements Runnable {
 			// --------------------------------------
 			// LOG SETUP
 			// --------------------------------------
-			File myObj = new File("prueba1.txt");
+			File myObj = new File("pruebas.txt");
 			if (myObj.createNewFile()) {
 				System.out.println("File created: " + myObj.getName());
 			} else {
 				System.out.println("File already exists.");
-				String num = myObj.getName().replace(".txt", "").replace("prueba", "");
-				int numeroNuevo = Integer.parseInt(num) + 1;
-				myObj = new File("prueba" + numeroNuevo + ".txt");
 			}
 
-			FileWriter w = new FileWriter(myObj.getName());
+			FileWriter w = new FileWriter(myObj.getName(), true);
 
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 			LocalDateTime now = LocalDateTime.now();
@@ -204,7 +203,7 @@ public class DSinSeguridad implements Runnable {
 			}
 			
 			// Revisa si quiere el video de Sech o el de Drake y Josh
-			// Enviar la confirmaci�n de empezar a enviar el archivo
+			// Enviar la confirmaciin de empezar a enviar el archivo
 			ac.println("Enviando archivo");
 
 			// Archivo a enviar
@@ -222,20 +221,26 @@ public class DSinSeguridad implements Runnable {
 			// Enviar el archivo al cliente
 			DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
 			Instant start = Instant.now();
-			sendFile(file, dos);
+			int cantidadPaquetesEnviados =sendFile(file, dos);
 			Instant end = Instant.now();
 			System.out.println("Termina de enviar");
 
 			//TODO tiempos de envio entre sendFile
 			long ts = Duration.between(start, end).toMillis();
 			
+			
+			//Recibir cantidad Paquetes
+			lineaCoca = dc.readLine();
+			int cantidadPaquetesRecibidos = Integer.parseInt(lineaCoca);
+			
+			
 			// Recibir FINALIZADO
 			lineaCoca = dc.readLine();
 			System.out.println(lineaCoca);
 
-			// To do: Time stamp para saber cuando termin� la transferencia
+			// To do: Time stamp para saber cuando termini la transferencia
 
-			// Enviar c�digo hash del archivo
+			// Enviar cidigo hash del archivo
 
 			// Use SHA-1 algorithm
 			MessageDigest shaDigest = MessageDigest.getInstance("MD5");
@@ -260,18 +265,18 @@ public class DSinSeguridad implements Runnable {
 				exitoso = "NO EXITOSO";
 			}
 			
-			w.write(myObj.getName());
-			w.write(dtf.format(now)); 
-			w.write("Archivo Enviado: " + nombreArchivoEnviado);
-			w.write("Tamanio: " + tamanioArchivoEnviado);
-			w.write("Nombre Cliente: " + nombreCliente);
-			w.write("Tiempo de Transferencia: " + ts + " ms");
+			w.write("---------------------"+ "\n");
+			w.write(dtf.format(now)+ "\n"); 
+			w.write("Archivo Enviado: " + nombreArchivoEnviado+ "\n");
+			w.write("Tamanio: " + tamanioArchivoEnviado+ "\n");
+			w.write("Nombre Cliente: " + nombreCliente+ "\n");
+			w.write("Tiempo de Transferencia: " + ts + " ms"+ "\n");
 			//TODO CON NUMERO DE BYTES
-			w.write("# Paquetes Enviados: ");
+			w.write("# Paquetes Enviados: "+ cantidadPaquetesEnviados +"\n");
 			
 			//TODO CON NUNMERO DE BYTES
-			w.write("# Paquetes Recibidos: ");
-
+			w.write("# Paquetes Recibidos: "+ cantidadPaquetesRecibidos+ "\n");
+			w.close();
 			dos.close();
 
 		} catch (Exception e) {
@@ -279,7 +284,7 @@ public class DSinSeguridad implements Runnable {
 			e.printStackTrace();
 		}
 
-		System.out.println(dlg + "Terminando atenci�n.");
+		System.out.println(dlg + "Terminando atenciin.");
 
 	}
 

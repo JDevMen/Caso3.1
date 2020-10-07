@@ -14,7 +14,6 @@ import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import javax.xml.bind.DatatypeConverter;
 
 
 public class ClienteProtocolo {
@@ -28,7 +27,7 @@ public class ClienteProtocolo {
 		pOut.println(fromUser);
 		String fromServer = "";
 
-		//Confirmaci�n de conexi�n
+		//Confirmacinin de conexinin
 		if((fromServer = nuevo.readLine())!= null){
 			System.out.println("Respuesta del servidor: " + fromServer);
 		}
@@ -37,7 +36,7 @@ public class ClienteProtocolo {
 			System.out.println("Preparado para recibir archivos");
 		}
 
-		//Confirmaci�n de conexi�n
+		//Confirmacinin de conexinin
 		if((fromServer = nuevo.readLine()).equals("Enviando archivo")){
 			OutputStream out = null;
 			System.out.println("Entro a enviando archivo");
@@ -46,7 +45,7 @@ public class ClienteProtocolo {
 			//Recibir nombre archivo xdddddddd
 			String nombreArchivo = nuevo.readLine();
 				
-			//Creaci�n de archivo a guardar
+			//Creacinin de archivo a guardar
 				File file = new File("./datosClientes/"+nombreArchivo);
 				file.createNewFile();
 				out = new FileOutputStream(file);
@@ -55,24 +54,27 @@ public class ClienteProtocolo {
 			//Inicio  dataInputStream para recibir archivo
 			DataInputStream dis = new DataInputStream(pIn);
 			
-			//Recibir tama�o del archivo
+			//Recibir tamanio del archivo
 			long len = dis.readLong();
-			System.out.println("Tama�o archivo "+len);
+			System.out.println("Tamanio archivo "+len);
 			int read = 0;
 			byte[] bytes = new byte[16*1024];
 			System.out.println("entro a leer");
+			int cuantosPaquetes =0;
 			while (len>0)
 			{	
+				cuantosPaquetes ++;
 				read = dis.read(bytes);
 				out.write(bytes,0,read);
 				len-=read;
 			}
-			System.out.println("Sali� de leer");
+			System.out.println("Salini de leer");
 			
-			//Env�a se�al FINALIZADO
+			pOut.println(""+ cuantosPaquetes);
+			//Envnia senial FINALIZADO
 			pOut.println("FINALIZADO");
 			
-			//recibir c�digo de hash
+			//recibir cnidigo de hash
 			int hashArchivo;
 			
 			//Use SHA-1 algorithm
@@ -104,9 +106,9 @@ public class ClienteProtocolo {
 		System.out.println("Protocolo terminado");
 	}
 
-	public static String toHexString(byte[] array) {
-		return DatatypeConverter.printBase64Binary(array);
-	}
+//	public static String toHexString(byte[] array) {
+//		return DatatypeConverter.printBase64Binary(array);
+//	}
 	
 	private static String getFileChecksum(MessageDigest digest, File file) throws IOException
 	{

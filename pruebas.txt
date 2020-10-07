@@ -1,0 +1,16 @@
+pruebas.txt
+2020/10/06 21:58:01
+Archivo Enviado: esteessech.mp4
+Tamanio: 1818836
+Nombre Cliente: 127.0.0.1
+Tiempo de Transferencia: 6 ms
+# Paquetes Enviados: 112
+# Paquetes Recibidos: 112
+pruebas.txt
+2020/10/06 21:58:01
+Archivo Enviado: esteessech.mp4
+Tamanio: 1818836
+Nombre Cliente: 127.0.0.1
+Tiempo de Transferencia: 6 ms
+# Paquetes Enviados: 112
+# Paquetes Recibidos: 112
