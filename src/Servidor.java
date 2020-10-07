@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class Servidor {
 	private static ServerSocket ss;	
-	private static int puerto = 147; 
+	private static int puerto = 2048; 
 	private static int cantServidores =1;
 	private static ArrayList<DSinSeguridad> dingos = new ArrayList<DSinSeguridad>();
 	/**
