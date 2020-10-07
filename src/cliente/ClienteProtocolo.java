@@ -2,7 +2,6 @@ package cliente;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,7 +28,7 @@ public class ClienteProtocolo {
 		pOut.println(fromUser);
 		String fromServer = "";
 
-		//Confirmación de conexión
+		//Confirmaciï¿½n de conexiï¿½n
 		if((fromServer = nuevo.readLine())!= null){
 			System.out.println("Respuesta del servidor: " + fromServer);
 		}
@@ -38,7 +37,7 @@ public class ClienteProtocolo {
 			System.out.println("Preparado para recibir archivos");
 		}
 
-		//Confirmación de conexión
+		//Confirmaciï¿½n de conexiï¿½n
 		if((fromServer = nuevo.readLine()).equals("Enviando archivo")){
 			OutputStream out = null;
 			System.out.println("Entro a enviando archivo");
@@ -47,7 +46,7 @@ public class ClienteProtocolo {
 			//Recibir nombre archivo xdddddddd
 			String nombreArchivo = nuevo.readLine();
 				
-			//Creación de archivo a guardar
+			//Creaciï¿½n de archivo a guardar
 				File file = new File("./datosClientes/"+nombreArchivo);
 				file.createNewFile();
 				out = new FileOutputStream(file);
@@ -56,9 +55,9 @@ public class ClienteProtocolo {
 			//Inicio  dataInputStream para recibir archivo
 			DataInputStream dis = new DataInputStream(pIn);
 			
-			//Recibir tamaño del archivo
+			//Recibir tamaï¿½o del archivo
 			long len = dis.readLong();
-			System.out.println("Tamaño archivo "+len);
+			System.out.println("Tamaï¿½o archivo "+len);
 			int read = 0;
 			byte[] bytes = new byte[16*1024];
 			System.out.println("entro a leer");
@@ -68,12 +67,12 @@ public class ClienteProtocolo {
 				out.write(bytes,0,read);
 				len-=read;
 			}
-			System.out.println("Salió de leer");
+			System.out.println("Saliï¿½ de leer");
 			
-			//Envía señal FINALIZADO
+			//Envï¿½a seï¿½al FINALIZADO
 			pOut.println("FINALIZADO");
 			
-			//recibir código de hash
+			//recibir cï¿½digo de hash
 			int hashArchivo;
 			
 			//Use SHA-1 algorithm
