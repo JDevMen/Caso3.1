@@ -13,7 +13,9 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 
 /**
- * @author Julián Mendoza
+ * @author Julian Mendoza
+ * @author Juan Res
+ * @author Luismigoles
  *
  */
 public class Servidor {
@@ -34,11 +36,11 @@ public class Servidor {
 		ThreadPoolExecutor deadpools = (ThreadPoolExecutor) Executors.newFixedThreadPool(cantServidores);
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 		/*
-		 * Aquí estoy poniendo el ciclo para aceptar conexiones a los servidores delegados
+		 * Aqui estoy poniendo el ciclo para aceptar conexiones a los servidores delegados
 		 */
 		System.out.println("Diga a cuantos clientes quiere enviar los archivos:");
 		int cuantos =Integer.parseInt(stdIn.readLine());
-		System.out.println("Diga cuál de los siguientes archivos quiere ver:");
+		System.out.println("Diga cual de los siguientes archivos quiere ver:");
 		System.out.println("Presione la tecla 1 para ver al Sech");
 		System.out.println("Presione la tecla 2 para ver la actualidad de la virtualidad");
 		String cual = stdIn.readLine();
