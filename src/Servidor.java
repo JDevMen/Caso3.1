@@ -44,7 +44,7 @@ public class Servidor {
 		System.out.println("Presione la tecla 1 para ver al Sech");
 		System.out.println("Presione la tecla 2 para ver la actualidad de la virtualidad");
 		String cual = stdIn.readLine();
-		for(int i= 0 ; i<cuantos; i++)
+		for(int i= 0 ; i<cuantos ; i++)
 		{
 			try { 
 				Socket sc = ss.accept();

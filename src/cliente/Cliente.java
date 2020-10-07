@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Cliente extends Thread {
 	
 	public static final int PUERTO = 2048;
-	public static final String SERVIDOR = "192.168.0.16";
+	public static final String SERVIDOR = "192.168.0.22";
 	private ArrayList<Socket> lista = new ArrayList<Socket>();
 	
 	public void run (){
