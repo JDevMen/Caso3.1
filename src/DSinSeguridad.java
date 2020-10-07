@@ -220,13 +220,13 @@ public class DSinSeguridad implements Runnable {
 
 			// Enviar el archivo al cliente
 			DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
-			Instant start = Instant.now();
+			//Instant start = Instant.now();
 			int cantidadPaquetesEnviados =sendFile(file, dos);
-			Instant end = Instant.now();
+			//Instant end = Instant.now();
 			System.out.println("Termina de enviar");
 
 			//TODO tiempos de envio entre sendFile
-			long ts = Duration.between(start, end).toMillis();
+			//long ts = Duration.between(start, end).toMillis();
 			
 			
 			//Recibir cantidad Paquetes
@@ -270,7 +270,7 @@ public class DSinSeguridad implements Runnable {
 			w.write("Archivo Enviado: " + nombreArchivoEnviado+ "\n");
 			w.write("Tamanio: " + tamanioArchivoEnviado+ "\n");
 			w.write("Nombre Cliente: " + nombreCliente+ "\n");
-			w.write("Tiempo de Transferencia: " + ts + " ms"+ "\n");
+			//w.write("Tiempo de Transferencia: " + ts + " ms"+ "\n");
 			//TODO CON NUMERO DE BYTES
 			w.write("# Paquetes Enviados: "+ cantidadPaquetesEnviados +"\n");
 			

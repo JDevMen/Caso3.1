@@ -55,7 +55,8 @@ public class ClienteProtocolo {
 			DataInputStream dis = new DataInputStream(pIn);
 			
 			//Recibir tamanio del archivo
-			long len = dis.readLong();
+			long len =0;
+			len = dis.readLong();
 			System.out.println("Tamanio archivo "+len);
 			int read = 0;
 			byte[] bytes = new byte[16*1024];
